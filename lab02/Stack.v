@@ -1,6 +1,7 @@
 // A stack that can store 10 16-bit signed integer
 module Stack (
-	input clk, reset, [15:0] in, push, pop,
+	input clk, reset, [15:0] in,
+	input push, pop,
 	output reg [15:0] out
 );
 	reg [4:0]  ptr;
