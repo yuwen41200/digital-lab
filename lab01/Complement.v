@@ -1,3 +1,4 @@
+// vim: set filetype=verilog:
 // 9-bit 2's Complement: I' = O
 module Complement(I, O);
 	input  [8:0] I;
@@ -13,7 +14,6 @@ module Complement(I, O);
 	Comp C7(I[7], T[6], O[6], T[7], O[7]);
 	Comp C8(I[8], T[7], O[7], T[8], O[8]);
 endmodule
-
 // 1-bit 2's Complement: I' = O
 module Comp(I, Cin, Oprecede, Cout, O);
 	input  I, Cin, Oprecede;
