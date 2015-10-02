@@ -15,6 +15,7 @@ module FullAdder(A, B, Cin, S, Cout);
 	Adder A7(A[7], B[7], T[6], S[7], T[7]);
 	Adder A8(A[8], B[8], T[7], S[8], Cout);
 endmodule
+
 // 1-bit Adder: A + B = S
 module Adder(A, B, Cin, S, Cout);
 	input  A, B, Cin;
