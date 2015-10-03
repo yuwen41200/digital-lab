@@ -17,7 +17,7 @@ module StackTb;
 	always #25 clk = ~clk;
 	initial begin
 		// Initialize Inputs
-		clk = 0;
+		clk = 1;
 		reset = 1;
 		push = 0;
 		pop = 0;
