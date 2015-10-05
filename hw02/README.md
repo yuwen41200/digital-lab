@@ -1,3 +1,3 @@
-## Lab 2 ##
+## Homework 2 ##
 
 Design a Postfix Calculator
