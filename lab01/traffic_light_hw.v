@@ -29,19 +29,19 @@ module traffic_light_hw (
 				begin
 					green_light  = 1'b1;
 					yellow_light = 1'b0;
-					red_light 	 = 1'b0;
+					red_light    = 1'b0;
 				end
 			yellow:
 				begin
 					green_light  = 1'b0;
 					yellow_light = 1'b1;
-					red_light 	 = 1'b0;
+					red_light    = 1'b0;
 				end
 			red:
 				begin
 					green_light  = 1'b0;
 					yellow_light = 1'b0;
-					red_light 	 = 1'b1;
+					red_light    = 1'b1;
 				end
 		endcase
 	end
