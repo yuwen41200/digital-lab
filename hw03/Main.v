@@ -1,44 +1,58 @@
 module Main(
 		input CLK, RST, BTN_E, BTN_W,
-		output reg [7:0] LED
+		output [7:0] LED
 	);
 
-	reg btn_e_count, btn_w_count;
-	reg [3:0] counter;
+	reg signed [31:0] btn_e_count, btn_w_count;
+	reg signed [3:0] counter;
+	reg operated;
 
+	// outputting the counter value to the leds
+	assign LED = {{4{counter[3]}}, counter};
+
+	// debouncing button signals
 	always @(posedge CLK) begin
-		// reseting all registers
 		if (RST) begin
-			counter     <= 0;
+			btn_e_count <= 0;
+			btn_w_count <= 0;
+			operated <= 0;
+		end
+		else if (btn_e_count >= 32'd10000000) begin
+			btn_e_count <= 0;
+			operated <= 1;
+		end
+		else if (btn_w_count >= 32'd10000000) begin
+			btn_w_count <= 0;
+			operated <= 1;
+		end
+		else if (BTN_E && ~operated)
+			btn_e_count <= btn_e_count + 1;
+		else if (BTN_W && ~operated)
+			btn_w_count <= btn_w_count + 1;
+		else if (~BTN_E && ~BTN_W)
+			operated <= 0;
+		else begin
 			btn_e_count <= 0;
 			btn_w_count <= 0;
 		end
-		// debouncing button signals
-		if (BTN_E)
-			btn_e_count <= btn_e_count + 1;
-		else
-			btn_e_count <= 0;
-		if (BTN_W)
-			btn_w_count <= btn_w_count + 1;
-		else
-			btn_w_count <= 0;
-		// increasing or decreasing the counter
-		if (btn_e_count >= 3) begin
+	end
+
+	// increasing or decreasing the counter
+	always @(posedge CLK) begin
+		if (RST)
+			counter <= 0;
+		else if (btn_e_count >= 32'd10000000) begin
 			if (counter >= -7)
 				counter <= counter - 1;
 			else
 				counter <= -8;
 		end
-		if (btn_w_count >= 3) begin
+		else if (btn_w_count >= 32'd10000000) begin
 			if (counter <= 6)
 				counter <= counter + 1;
 			else
 				counter <= 7;
 		end
-	end
-
-	always @(*) begin
-		LED = {{4{counter[3]}}, counter[3:0]};
 	end
 
 endmodule
