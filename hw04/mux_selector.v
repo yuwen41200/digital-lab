@@ -1,3 +1,4 @@
+// vim: set filetype=verilog:
 module mux_selector(
 		// php > for ($i=0; $i<=31; $i++) echo "data".$i.", ";
 		input [7:0] data0, data1, data2, data3, data4, data5, data6, data7,
