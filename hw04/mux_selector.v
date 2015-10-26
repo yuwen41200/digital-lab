@@ -5,7 +5,7 @@ module mux_selector(
 		input [7:0] data8, data9, data10, data11, data12, data13, data14, data15,
 		input [7:0] data16, data17, data18, data19, data20, data21, data22, data23,
 		input [7:0] data24, data25, data26, data27, data28, data29, data30, data31,
-		input [5:0] data_count, output reg [7:0] in
+		input [4:0] data_count, output reg [7:0] in
 	);
 
 	always @(*) begin

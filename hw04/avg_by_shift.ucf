@@ -1,0 +1,34 @@
+# User Constraints
+
+NET "rst" LOC = K17;
+NET "rst" IOSTANDARD = LVTTL;
+NET "rst" PULLDOWN;
+
+NET "clk" LOC = C9;
+NET "clk" IOSTANDARD = LVCMOS33;
+NET "clk" PERIOD = 20.0ns HIGH 40%;
+
+NET "avg[7]" LOC = F9;
+NET "avg[6]" LOC = E9;
+NET "avg[5]" LOC = D11;
+NET "avg[4]" LOC = C11;
+NET "avg[3]" LOC = F11;
+NET "avg[2]" LOC = E11;
+NET "avg[1]" LOC = E12;
+NET "avg[0]" LOC = F12;
+NET "avg[7]" IOSTANDARD = LVTTL;
+NET "avg[6]" IOSTANDARD = LVTTL;
+NET "avg[5]" IOSTANDARD = LVTTL;
+NET "avg[4]" IOSTANDARD = LVTTL;
+NET "avg[3]" IOSTANDARD = LVTTL;
+NET "avg[2]" IOSTANDARD = LVTTL;
+NET "avg[1]" IOSTANDARD = LVTTL;
+NET "avg[0]" IOSTANDARD = LVTTL;
+NET "avg[7]" DRIVE = 8;
+NET "avg[6]" DRIVE = 8;
+NET "avg[5]" DRIVE = 8;
+NET "avg[4]" DRIVE = 8;
+NET "avg[3]" DRIVE = 8;
+NET "avg[2]" DRIVE = 8;
+NET "avg[1]" DRIVE = 8;
+NET "avg[0]" DRIVE = 8;

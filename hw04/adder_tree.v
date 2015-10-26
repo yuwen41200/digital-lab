@@ -18,7 +18,7 @@ module adder_tree(
 
 	assign adder3   = adder2_1 + adder2_2;
 
-	always @(negedge clk) begin
+	always @(posedge clk) begin
 		if (rst)
 			sum <= 0;
 		else

@@ -39,7 +39,7 @@ module avg_by_shift(
 			in_valid <= 1;
 		end
 		else begin
-			if (data_count < 32) begin
+			if (data_count < 31) begin
 				// php > for ($j=0; $j<=7; $j++) for ($i=0; $i<=31; $i++) echo "data".$j."[".$i."] <= data".$j."[".($i+1)."];\n";
 				data0[0] <= data0[1];
 				data0[1] <= data0[2];
