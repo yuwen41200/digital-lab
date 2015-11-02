@@ -8,7 +8,6 @@ module main(
 	);
 
 localparam [1:0] S_IDLE = 2'b00, S_WAIT = 2'b01, S_SEND = 2'b10, S_INCR = 2'b11;
-localparam [1:0] SS_IDLE = 2'b00, SS_WAIT = 2'b01, SS_RECV = 2'b10, SS_INCR = 2'b11;
 localparam MEM_SIZE = 256;
 
 wire btn_pressed;
