@@ -21,6 +21,7 @@ wire recv_error;
 reg  [7:0]  send_counter, recv_counter;
 reg  [1:0]  current_state, next_state;
 reg  [7:0]  data [0:MEM_SIZE-1];
+reg  same_btn_press;
 integer idx;
 
 debounce debounce(.clk(clk), .btn_input(btn), .btn_output(btn_pressed));
@@ -69,10 +70,19 @@ always @(posedge clk) begin
 		send_counter <= send_counter + 1;
 end
 
+always @(posedge clk) begin
+	if (rst)
+		same_btn_press <= 0;
+	else if (btn_pressed && ~same_btn_press)
+		same_btn_press <= 1;
+	else if (~btn_pressed)
+		same_btn_press <= 0;
+end
+
 always @(*) begin
 	case (current_state)
 		S_IDLE: // wait for a button click
-			if (btn_pressed)
+			if (btn_pressed && ~same_btn_press)
 				next_state = S_WAIT;
 			else
 				next_state = S_IDLE;
