@@ -8,6 +8,7 @@ module main(
 	);
 
 localparam [1:0] S_IDLE = 2'b00, S_WAIT = 2'b01, S_SEND = 2'b10, S_INCR = 2'b11;
+localparam [1:0] SS_IDLE = 2'b00, SS_WAIT = 2'b01, SS_RECV = 2'b10, SS_INCR = 2'b11;
 localparam MEM_SIZE = 256;
 
 wire btn_pressed;
@@ -21,7 +22,6 @@ wire recv_error;
 reg  [7:0]  send_counter, recv_counter;
 reg  [1:0]  current_state, next_state;
 reg  [7:0]  data [0:MEM_SIZE-1];
-reg  [15:0] recv_invalid;
 integer idx;
 
 debounce debounce(.clk(clk), .btn_input(btn), .btn_output(btn_pressed));
@@ -36,25 +36,17 @@ assign transmit = (current_state == S_WAIT) ? 1 : 0;
 // Circuit for Receiving Data
 
 always @(posedge clk) begin
-	if (rst) begin
+	if (rst)
 		recv_counter <= 0;
-		recv_invalid <= 0;
-	end
-	else if (received || is_receiving) begin
-		if (recv_invalid == 52083) begin // (1/9600 * 10) / (2 * 10^-8) = 52083.333
-			recv_counter <= recv_counter + 1;
-			recv_invalid <= 0;
-		end
-		else
-			recv_invalid <= recv_invalid + 1;
-	end
+	else if (received)
+		recv_counter <= recv_counter + 1;
 end
 
 always @(posedge clk) begin
 	if (rst)
 		for (idx = 0; idx < MEM_SIZE; idx = idx + 1)
 			data[idx] <= 8'h0;
-	else if ((received || is_receiving) && (recv_invalid == 0)) begin
+	else if (received) begin
 		if (rx_byte >= 8'h61 && rx_byte <= 8'h7A)
 			data[recv_counter] <= rx_byte - 8'h20;
 		else
