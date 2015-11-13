@@ -12,15 +12,15 @@ localparam MEM_SIZE = 256;
 
 wire btn_pressed;
 wire transmit;
-wire [7:0]  tx_byte;
+wire [7:0] tx_byte;
 wire received;
-wire [7:0]  rx_byte;
+wire [7:0] rx_byte;
 wire is_receiving;
 wire is_transmitting;
 wire recv_error;
-reg  [7:0]  send_counter, recv_counter;
-reg  [1:0]  current_state, next_state;
-reg  [7:0]  data [0:MEM_SIZE-1];
+reg  [7:0] send_counter, recv_counter;
+reg  [1:0] current_state, next_state;
+reg  [7:0] data [0:MEM_SIZE-1];
 reg  same_btn_press;
 integer idx;
 

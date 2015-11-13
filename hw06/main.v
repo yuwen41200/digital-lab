@@ -24,10 +24,10 @@ reg [7:0]  mtx_a [0:15];
 reg [7:0]  mtx_b [0:15];
 reg [17:0] mtx_c [0:15];
 reg [17:0] temp  [0:15];
-reg [2:0] curr_state1, next_state1;
-reg [1:0] curr_state2, next_state2;
-reg [7:0] recv_counter, send_counter;
-reg [7:0] result [0:255];
+reg [2:0]  curr_state1, next_state1;
+reg [1:0]  curr_state2, next_state2;
+reg [7:0]  recv_counter, send_counter;
+reg [7:0]  result [0:255];
 integer idx;
 
 debounce debounce(.clk(clk), .btn_in(btn), .btn_out(btn_r));
