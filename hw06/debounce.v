@@ -1,31 +1,35 @@
-// Copyright Notice: This code is written by the TAs of this course.
+module debounce(
+		input clk,
+		input btn_in,
+		output reg btn_out
+	);
 
-module debounce(input clk, input btn_input, output btn_output);
-
-parameter DEBOUNCE_PERIOD = 1000000; /* 20 msec @ 50MHz */
+// 20 msec @ 50MHz
+parameter DEBOUNCE_PERIOD = 1000000;
 
 reg [20:0] counter;
-reg debounced_btn_state;
 reg pressed;
 
-assign btn_output = debounced_btn_state;
-
 always @(posedge clk) begin
-	if (btn_input == 0) begin
-		counter <= 0;
-		pressed <= 0;
-	end else begin
+	if (btn_in)
 		counter <= counter + 1;
-		pressed <= (debounced_btn_state == 1) ? 1 : 0;
-	end
+	else
+		counter <= 0;
 end
 
 always @(posedge clk) begin
-	// wait until the button is pressed continuously for 20 msec
-	if (counter == DEBOUNCE_PERIOD && pressed == 0)
-		debounced_btn_state <= 1;
-	else
-		debounced_btn_state <= (btn_input == 0) ? 0 : btn_output;
+	if (counter >= DEBOUNCE_PERIOD && pressed) begin
+		btn_out <= 0;
+		pressed <= 1;
+	end
+	else if (counter >= DEBOUNCE_PERIOD && ~pressed) begin
+		btn_out <= 1;
+		pressed <= 1;
+	end
+	else if (~btn_in) begin
+		btn_out <= 0;
+		pressed <= 0;
+	end
 end
 
 endmodule
