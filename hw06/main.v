@@ -29,7 +29,7 @@ reg [17:0] temp_in [0:3];
 reg [2:0]  curr_state1, next_state1;
 reg [1:0]  curr_state2, next_state2;
 reg [7:0]  recv_counter, conv_counter, send_counter;
-reg [7:0]  result [0:255];
+reg [7:0]  result [0:127];
 
 integer idx;
 
@@ -48,7 +48,7 @@ conv2 convert(.binary_in(temp_in[2]),   .text_out0(temp_out[10]), .text_out1(tem
 conv3 convert(.binary_in(temp_in[3]),   .text_out0(temp_out[15]), .text_out1(temp_out[16]),
               .text_out2(temp_out[17]), .text_out3(temp_out[18]), .text_out4(temp_out[19]));
 
-assign led = {7'b0, recv_error};
+assign led = {7'd0, recv_error};
 assign tx_byte = result[send_counter];
 assign done = (curr_state1 == S1_DONE) ? 1 : 0;
 assign transmit = (curr_state2 == S2_WAIT) ? 1 : 0;
@@ -80,7 +80,7 @@ always @(posedge clk) begin
 end
 
 /**
- * multiply the received matrices and convert the results to text
+ * multiply the received matrices and convert the result to text
  */
 
 always @(posedge clk) begin
@@ -110,6 +110,14 @@ end
 always @(posedge clk) begin
 	if (rst || curr_state1 == S1_IDLE)
 		conv_counter <= 0;
+	else if (curr_state1 >= S1_ROW2 && curr_state1 <= S1_PEND1)
+		conv_counter <= conv_counter + 26;
+end
+
+always @(posedge clk) begin
+	if (rst)
+		for (idx = 0; idx < 128; idx = idx + 1)
+			result[idx] <= 8'd0;
 	else if (curr_state1 >= S1_ROW2 && curr_state1 <= S1_PEND1) begin
 		for (idx = 0; idx < 4; idx = idx + 1) begin
 			result[conv_counter+idx*6+0] <= temp_out[idx*5+0];
@@ -121,11 +129,6 @@ always @(posedge clk) begin
 		end
 		result[conv_counter+24] <= 8'd13; // carriage return
 		result[conv_counter+25] <= 8'd10; // line feed
-		conv_counter <= conv_counter + 26;
-	end
-	else if (curr_state1 == S1_DONE) begin
-		result[conv_counter] <= 8'd0; // null
-		conv_counter <= conv_counter + 1;
 	end
 end
 
