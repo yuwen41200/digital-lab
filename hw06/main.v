@@ -39,14 +39,14 @@ uart uart(.clk(clk), .rst(rst), .rx(rx), .tx(tx), .transmit(transmit), .tx_byte(
           .received(received), .rx_byte(rx_byte), .is_receiving(is_receiving),
           .is_transmitting(is_transmitting), .recv_error(recv_error));
 
-conv0 convert(.binary_in(temp_in[0]),    .text_out_0(temp_out[0]),  .text_out_1(temp_out[1]),
-              .text_out_2(temp_out[2]),  .text_out_3(temp_out[3]),  .text_out_4(temp_out[4]));
-conv1 convert(.binary_in(temp_in[1]),    .text_out_0(temp_out[5]),  .text_out_1(temp_out[6]),
-              .text_out_2(temp_out[7]),  .text_out_3(temp_out[8]),  .text_out_4(temp_out[9]));
-conv2 convert(.binary_in(temp_in[2]),    .text_out_0(temp_out[10]), .text_out_1(temp_out[11]),
-              .text_out_2(temp_out[12]), .text_out_3(temp_out[13]), .text_out_4(temp_out[14]));
-conv3 convert(.binary_in(temp_in[3]),    .text_out_0(temp_out[15]), .text_out_1(temp_out[16]),
-              .text_out_2(temp_out[17]), .text_out_3(temp_out[18]), .text_out_4(temp_out[19]));
+conv0 convert(.binary_in(temp_in[0]),   .text_out0(temp_out[0]),  .text_out1(temp_out[1]),
+              .text_out2(temp_out[2]),  .text_out3(temp_out[3]),  .text_out4(temp_out[4]));
+conv1 convert(.binary_in(temp_in[1]),   .text_out0(temp_out[5]),  .text_out1(temp_out[6]),
+              .text_out2(temp_out[7]),  .text_out3(temp_out[8]),  .text_out4(temp_out[9]));
+conv2 convert(.binary_in(temp_in[2]),   .text_out0(temp_out[10]), .text_out1(temp_out[11]),
+              .text_out2(temp_out[12]), .text_out3(temp_out[13]), .text_out4(temp_out[14]));
+conv3 convert(.binary_in(temp_in[3]),   .text_out0(temp_out[15]), .text_out1(temp_out[16]),
+              .text_out2(temp_out[17]), .text_out3(temp_out[18]), .text_out4(temp_out[19]));
 
 assign led = {7'b0, recv_error};
 assign tx_byte = result[send_counter];
@@ -67,9 +67,9 @@ end
 always @(posedge clk) begin
 	if (rst) begin
 		for (idx = 0; idx < 16; idx = idx + 1)
-			mtx_a[idx] <= 8'h0;
+			mtx_a[idx] <= 8'd0;
 		for (idx = 0; idx < 16; idx = idx + 1)
-			mtx_b[idx] <= 8'h0;
+			mtx_b[idx] <= 8'd0;
 	end
 	else if (received) begin
 		if (recv_counter < 16)
@@ -111,20 +111,20 @@ always @(posedge clk) begin
 	if (rst || curr_state1 == S1_IDLE)
 		conv_counter <= 0;
 	else if (curr_state1 >= S1_ROW2 && curr_state1 <= S1_PEND1) begin
-		for (idx = 0; idx < 4; idx = idx + 1)
+		for (idx = 0; idx < 4; idx = idx + 1) begin
 			result[conv_counter+idx*6+0] <= temp_out[idx*5+0];
 			result[conv_counter+idx*6+1] <= temp_out[idx*5+1];
 			result[conv_counter+idx*6+2] <= temp_out[idx*5+2];
 			result[conv_counter+idx*6+3] <= temp_out[idx*5+3];
 			result[conv_counter+idx*6+4] <= temp_out[idx*5+4];
-			result[conv_counter+idx*6+5] <= 32; // space
+			result[conv_counter+idx*6+5] <= 8'd32; // space
 		end
-		result[conv_counter+24] <= 13; // carriage return
-		result[conv_counter+25] <= 10; // line feed
+		result[conv_counter+24] <= 8'd13; // carriage return
+		result[conv_counter+25] <= 8'd10; // line feed
 		conv_counter <= conv_counter + 26;
 	end
 	else if (curr_state1 == S1_DONE) begin
-		result[conv_counter] <= 0; // null
+		result[conv_counter] <= 8'd0; // null
 		conv_counter <= conv_counter + 1;
 	end
 end
@@ -189,7 +189,7 @@ always @(*) begin
 			else
 				next_state2 = S2_INCR;
 		S2_INCR:
-			if (tx_byte == 0)
+			if (tx_byte == 8'd0)
 				next_state2 = S2_IDLE;
 			else
 				next_state2 = S2_WAIT;
