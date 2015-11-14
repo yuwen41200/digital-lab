@@ -28,7 +28,7 @@ reg [17:0] mtx_t [0:15];
 reg [17:0] temp_in [0:3];
 reg [2:0]  curr_state1, next_state1;
 reg [1:0]  curr_state2, next_state2;
-reg [7:0]  recv_counter, conv_counter, send_counter;
+reg [6:0]  recv_counter, conv_counter, send_counter;
 reg [7:0]  result [0:127];
 
 integer idx;
@@ -39,13 +39,13 @@ uart uart(.clk(clk), .rst(rst), .rx(rx), .tx(tx), .transmit(transmit), .tx_byte(
           .received(received), .rx_byte(rx_byte), .is_receiving(is_receiving),
           .is_transmitting(is_transmitting), .recv_error(recv_error));
 
-conv0 convert(.binary_in(temp_in[0]),   .text_out0(temp_out[0]),  .text_out1(temp_out[1]),
+convert conv0(.binary_in(temp_in[0]),   .text_out0(temp_out[0]),  .text_out1(temp_out[1]),
               .text_out2(temp_out[2]),  .text_out3(temp_out[3]),  .text_out4(temp_out[4]));
-conv1 convert(.binary_in(temp_in[1]),   .text_out0(temp_out[5]),  .text_out1(temp_out[6]),
+convert conv1(.binary_in(temp_in[1]),   .text_out0(temp_out[5]),  .text_out1(temp_out[6]),
               .text_out2(temp_out[7]),  .text_out3(temp_out[8]),  .text_out4(temp_out[9]));
-conv2 convert(.binary_in(temp_in[2]),   .text_out0(temp_out[10]), .text_out1(temp_out[11]),
+convert conv2(.binary_in(temp_in[2]),   .text_out0(temp_out[10]), .text_out1(temp_out[11]),
               .text_out2(temp_out[12]), .text_out3(temp_out[13]), .text_out4(temp_out[14]));
-conv3 convert(.binary_in(temp_in[3]),   .text_out0(temp_out[15]), .text_out1(temp_out[16]),
+convert conv3(.binary_in(temp_in[3]),   .text_out0(temp_out[15]), .text_out1(temp_out[16]),
               .text_out2(temp_out[17]), .text_out3(temp_out[18]), .text_out4(temp_out[19]));
 
 assign led = {7'd0, recv_error};
