@@ -1,3 +1,3 @@
-## Homework 6 ##
+## Lab 6 ##
 
 Matrix Multiplication Circuit Design

@@ -1,4 +1,3 @@
 ## Lab 1 ##
 
-Exercise 1: Design a Ring Counter  
-Exercise 2: Traffic Light
+Design an 8-bit Subtractor

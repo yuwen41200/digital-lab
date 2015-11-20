@@ -1,3 +1,3 @@
-## Homework 5 ##
+## Lab 5 ##
 
 UART Communications
