@@ -5,7 +5,6 @@
  *   c. The user can then press the west button to trigger the SD card controller to read the super block
  *      of the SD card (located at block 8192) into a SRAM memory.
  *   d. The LED will then display the first byte of the super block, i.e. 0xeb.
- * Copyright Notice: This code is written by the TAs of this course.
  */
 
 module main(
@@ -24,14 +23,14 @@ module main(
 	);
 
 // FSM states
-localparam [2:0] S_SDCD_INIT = 3'd0, S_SDCD_IDLE = 3'd1, S_SDCD_WAIT = 3'd2, S_SDCD_READ = 3'd3, S_SDCD_BYTE0 = 3'd4;
+localparam [2:0] S_SDCD_INIT = 3'd0, S_SDCD_IDLE = 3'd1, S_SDCD_WAIT = 3'd2, S_SDCD_READ = 3'd3, S_SDCD_VERIFY = 3'd4;
 localparam [1:0] S_UART_IDLE = 2'd0, S_UART_WAIT = 2'd1, S_UART_SEND = 2'd2, S_UART_INCR = 2'd3;
 
 // Declare system variables
 reg [2:0] P, P_next;
 reg [1:0] Q, Q_next;
-reg [9:0] uart_counter;
 reg [9:0] sdcd_counter;
+reg [9:0] uart_counter;
 reg [7:0] signature;
 
 // Button debounce
@@ -99,25 +98,24 @@ sd_card sd_card(
 	);
 
 // Application signals
-reg  test_flag;
+reg  sdcd_read_done;
 wire uart_transmit_start;
 
-assign led = (test_flag) ? signature : (P == S_SDCD_IDLE) ? 8'b11111111 : 8'b0;
+assign led = (sdcd_read_done) ? signature : (P == S_SDCD_IDLE) ? 8'b11111111 : 8'b0;
 assign uart_transmit_start = 0;
 
-// The following code describes an SRAM memory block that is connected to the data output port of the SD controller.
-// Once the read request is made to the SD controller, 512 bytes of data will be sequentially read into the SRAM memory block,
-// one byte per clock cycle (as long as the out_valid signal is high).
+// The following code describes an SRAM memory block that is connected to the data output port of the SD card controller.
+// Once the read request is made to the SD card controller, 512 bytes of data will be sequentially read into the SRAM memory block,
+// one byte per clock cycle (as long as the 'out_valid' signal is high).
 reg  [7:0] sram [511:0];
 reg  [7:0] data_out;
 wire [7:0] data_in;
 wire write_enabled, enabled;
 wire [8:0] sram_addr;
 
-assign write_enabled = out_valid; // Write data to the SRAM when out_valid is high.
+assign write_enabled = out_valid; // Write data to the SRAM when 'out_valid' is high.
 assign enabled = 1;               // Always enable the SRAM block.
-assign data_in = sdcd_out;        // Input data always comes from the SD controller.
-
+assign data_in = sdcd_out;        // Input data always comes from the SD card controller.
 assign sram_addr = (Q == S_UART_IDLE) ? sdcd_counter[8:0] : uart_counter[8:0];
 
 always @(posedge clk)
@@ -135,46 +133,47 @@ end
 always @(posedge clk) begin
 	if (rst) begin
 		P <= S_SDCD_INIT;
-		test_flag <= 0;
+		sdcd_read_done <= 0;
 	end
 	else begin
 		P <= P_next;
-		test_flag <= (P == S_SDCD_BYTE0)? 1 : test_flag;
+		sdcd_read_done <= (P == S_SDCD_VERIFY) ? 1 : sdcd_read_done;
 	end
 end
 
-always @(*) begin // FSM next-state logic
+always @(*) begin
 	case (P)
-		S_SDCD_INIT: // wait for SD card initialization
-			if (init_finish == 1) P_next = S_SDCD_IDLE;
-			else P_next = S_SDCD_INIT;
-		S_SDCD_IDLE: // wait for button click
-			if (btn_r) P_next = S_SDCD_WAIT;
-			else P_next = S_SDCD_IDLE;
-		S_SDCD_WAIT: // issue a rd_req to the SD controller until it's ready
+		S_SDCD_INIT: // Wait for SD card initialization.
+			if (init_finish)
+				P_next = S_SDCD_IDLE;
+			else
+				P_next = S_SDCD_INIT;
+		S_SDCD_IDLE: // Wait for a button click.
+			if (btn_r)
+				P_next = S_SDCD_WAIT;
+			else
+				P_next = S_SDCD_IDLE;
+		S_SDCD_WAIT: // Issue a 'rd_req' to the SD card controller.
 			P_next = S_SDCD_READ;
-		S_SDCD_READ: // wait for the input data to enter the SRAM buffer
-			if (sdcd_counter == 512) P_next = S_SDCD_BYTE0;
-			else P_next = S_SDCD_READ;
-		S_SDCD_BYTE0: // read byte 0 of the super block from sram[]
+		S_SDCD_READ: // Wait for the input data to enter the SRAM buffer.
+			if (sdcd_counter == 512)
+				P_next = S_SDCD_VERIFY;
+			else
+				P_next = S_SDCD_READ;
+		S_SDCD_VERIFY: // Read byte 0 of the super block from 'sram'.
 			P_next = S_SDCD_IDLE;
 		default:
 			P_next = S_SDCD_IDLE;
 	endcase
 end
 
-// FSM output logic: controls the 'rd_req' and 'rd_addr' signals.
-// In this example, we always set rd_addr to 8192 since we only have
-// to read the super block. For Lab 7, you must control 'rd_addr'
-// to scan through all the SD card blocks (each block has 512 bytes).
-//
 always @(posedge clk) begin
 	if (P == S_SDCD_IDLE) begin
 		rd_req <= 0;
 		rd_addr <= 32'd8192;
 	end
 	else if (P == S_SDCD_WAIT) begin
-		rd_req <= 1;
+		rd_req <= 1; // Controls the 'rd_req' and 'rd_addr' signals.
 		rd_addr <= 32'd8192;
 	end
 	else begin
@@ -183,61 +182,61 @@ always @(posedge clk) begin
 	end
 end
 
-// FSM output logic: controls the 'sdcd_counter' signal.
-//
 always @(posedge clk) begin
-	if (rst || P == S_SDCD_BYTE0)
+	if (rst || P == S_SDCD_VERIFY)
 		sdcd_counter <= 0;
 	else if (P == S_SDCD_READ && out_valid)
-		sdcd_counter <= sdcd_counter + 1;
+		sdcd_counter <= sdcd_counter + 1; // Controls the 'sdcd_counter' signal.
 end
 
-// FSM output logic: Retrieves the content of sram[0] for led display
-//
 always @(posedge clk) begin
-	if (rst) signature <= 8'b0;
-	else if (enabled && P == S_SDCD_BYTE0) signature <= data_out;
+	if (rst)
+		signature <= 8'b0;
+	else if (enabled && P == S_SDCD_VERIFY)
+		signature <= data_out; // Retrieves the content of 'sram[0]' for led display.
 end
 
-// End of the FSM of the SD card reader
-// ------------------------------------------------------------------------
-
-// ------------------------------------------------------------------------
-// FSM of the UART print data controller
+// FSM of the UART controller
 always @(posedge clk) begin
-	if (rst) Q <= S_UART_IDLE;
-	else Q <= Q_next;
+	if (rst)
+		Q <= S_UART_IDLE;
+	else
+		Q <= Q_next;
 end
 
-always @(*) begin // FSM next-state logic
+always @(*) begin
 	case (Q)
-		S_UART_IDLE: // wait for button click
-			if (uart_transmit_start == 1) Q_next = S_UART_WAIT;
-			else Q_next = S_UART_IDLE;
-		S_UART_WAIT: // wait for the transmission of current data byte begins
-			if (is_transmitting == 1) Q_next = S_UART_SEND;
-			else Q_next = S_UART_WAIT;
-		S_UART_SEND: // wait for the transmission of current data byte finishes
-			if (is_transmitting == 0) Q_next = S_UART_INCR; // transmit next character
-			else Q_next = S_UART_SEND;
+		S_UART_IDLE: // wait for a trigger.
+			if (uart_transmit_start)
+				Q_next = S_UART_WAIT;
+			else
+				Q_next = S_UART_IDLE;
+		S_UART_WAIT: // Wait for the transmission of the current data byte begins.
+			if (is_transmitting)
+				Q_next = S_UART_SEND;
+			else
+				Q_next = S_UART_WAIT;
+		S_UART_SEND: // Wait for the transmission of the current data byte finishes.
+			if (is_transmitting)
+				Q_next = S_UART_SEND;
+			else
+				Q_next = S_UART_INCR;
 		S_UART_INCR:
-			if (tx_byte == 8'b0) Q_next = S_UART_IDLE; // data transmission ends
-			else Q_next = S_UART_WAIT;
+			if (tx_byte == 8'b0) // Data transmission ends.
+				Q_next = S_UART_IDLE;
+			else
+				Q_next = S_UART_WAIT;
 	endcase
 end
 
-// FSM output logics
-assign transmit = (Q == S_UART_WAIT)? 1 : 0;
-assign tx_byte = data_out;
-
-// FSM-controlled send_counter incrementing data path
 always @(posedge clk) begin
-	if (rst || (Q == S_UART_IDLE))
+	if (rst || Q == S_UART_IDLE)
 		uart_counter <= 0;
 	else if (Q == S_UART_INCR)
 		uart_counter <= uart_counter + 1;
 end
-// End of the FSM of the UART print data controller
-// ------------------------------------------------------------------------
+
+assign transmit = (Q == S_UART_WAIT) ? 1 : 0;
+assign tx_byte = data_out;
 
 endmodule

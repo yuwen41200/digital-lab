@@ -1,6 +1,6 @@
 /**
  * Divide the input clock by the divider.
- * Copyright Notice: This code is written by the TAs of this course.
+ * Copyright Notice: This code was written by the TAs of this course.
  */
 
 module clk_divider#(parameter divider = 16)(input clk, input rst, output reg clk_out);

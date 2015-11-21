@@ -5,7 +5,7 @@
  *   c. Once we trigger the reading of a block by setting 'rd_req' to '1' and 'block_address'
  *      to the block number to read, the output port 'dout' will return one byte of data from
  *      the block per clock cycle whenever the flag 'out_valid' is '1'.
- * Copyright Notice: This code is written by the TAs of this course.
+ * Copyright Notice: This code was written by the TAs of this course.
  */
 
 module sd_card(

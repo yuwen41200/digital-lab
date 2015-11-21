@@ -1,6 +1,6 @@
 /**
  * Divide the input clock by 100 to generate a 500 kHz clock.
- * Copyright Notice: This code is written by the TAs of this course.
+ * Copyright Notice: This code was written by the TAs of this course.
  */
 
 module clk_500khz(input clk, input rst, input divider, output reg clk500k);
