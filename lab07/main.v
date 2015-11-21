@@ -206,7 +206,7 @@ end
 
 always @(*) begin
 	case (Q)
-		S_UART_IDLE: // wait for a trigger.
+		S_UART_IDLE: // Wait for a trigger.
 			if (uart_transmit_start)
 				Q_next = S_UART_WAIT;
 			else
