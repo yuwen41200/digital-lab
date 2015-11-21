@@ -5,6 +5,7 @@
  *   c. The user can then press the west button to trigger the SD card controller to read the super block
  *      of the SD card (located at block 8192) into a SRAM memory.
  *   d. The LED will then display the first byte of the super block, i.e. 0xeb.
+ * Copyright Notice: This code is written by the TAs of this course.
  */
 module lab7(
 		// General system I/O ports
