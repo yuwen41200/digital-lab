@@ -4,7 +4,7 @@ module debounce(
 		output reg btn_out
 	);
 
-// 20 msec @ 50MHz
+// 20 ms @ 50MHz
 parameter DEBOUNCE_PERIOD = 1000000;
 
 reg [20:0] counter;
