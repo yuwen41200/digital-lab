@@ -201,7 +201,8 @@ end
 always @(posedge clk) begin
 	if (rst || P == S_SDCD_IDLE || P == S_SDCD_WAIT)
 		sdcd_verify_success <= 0;
-	else if (P == S_SDCD_VRFY && pattern[0] == 8'h44 && pattern[1] == 8'h4C && pattern[2] == 8'h41 && pattern[3] == 8'h42 && pattern[4] == 8'h5F && pattern[5] == 8'h54 && pattern[6] == 8'h41 && pattern[7] == 8'h47)
+	else if (P == S_SDCD_VRFY && pattern[0] == 8'h44 && pattern[1] == 8'h4C && pattern[2] == 8'h41 && pattern[3] == 8'h42
+	                          && pattern[4] == 8'h5F && pattern[5] == 8'h54 && pattern[6] == 8'h41 && pattern[7] == 8'h47)
 		sdcd_verify_success <= 1;
 end
 
