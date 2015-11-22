@@ -65,6 +65,7 @@ uart uart(
 
 // Clock selection for the SD card controller
 wire clk_sel, clk_500khz;
+wire init_finish;
 
 clk_divider#(100) clk_divider(
 		.clk(clk),
@@ -77,7 +78,6 @@ assign clk_sel = (init_finish) ? clk : clk_500khz;
 // Declare SD card controller signals
 reg  rd_req;
 reg  [31:0] rd_adr;
-wire init_finish;
 wire [7:0] sdcd_out;
 wire out_valid;
 
@@ -184,8 +184,16 @@ always @(posedge clk) begin
 end
 
 always @(posedge clk) begin
-	if (rst || P == S_SDCD_WAIT)
-		pattern[0:7] <= 64'b0;
+	if (rst || P == S_SDCD_WAIT) begin
+		pattern[0] <= 8'b0;
+		pattern[1] <= 8'b0;
+		pattern[2] <= 8'b0;
+		pattern[3] <= 8'b0;
+		pattern[4] <= 8'b0;
+		pattern[5] <= 8'b0;
+		pattern[6] <= 8'b0;
+		pattern[7] <= 8'b0;
+	end
 	else if (P == S_SDCD_READ && out_valid && sdcd_counter >= 0 && sdcd_counter <= 7)
 		pattern[sdcd_counter] <= sdcd_out;
 end
@@ -193,7 +201,7 @@ end
 always @(posedge clk) begin
 	if (rst || P == S_SDCD_IDLE || P == S_SDCD_WAIT)
 		sdcd_verify_success <= 0;
-	else if (P == S_SDCD_VRFY && pattern[0:7] == 64'h444C41425F544147)
+	else if (P == S_SDCD_VRFY && pattern[0] == 8'h44 && pattern[1] == 8'h4C && pattern[2] == 8'h41 && pattern[3] == 8'h42 && pattern[4] == 8'h5F && pattern[5] == 8'h54 && pattern[6] == 8'h41 && pattern[7] == 8'h47)
 		sdcd_verify_success <= 1;
 end
 
