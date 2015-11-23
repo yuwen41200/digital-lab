@@ -22,7 +22,7 @@ module main(
 	);
 
 // FSM states
-localparam [2:0] S_SDCD_INIT = 3'd0, S_SDCD_IDLE = 3'd1, S_SDCD_WAIT = 3'd2, S_SDCD_READ = 3'd3, S_SDCD_VRFY = 3'd4;
+localparam [2:0] S_SDCD_INIT = 3'd0, S_SDCD_IDLE = 3'd1, S_SDCD_WAIT = 3'd2, S_SDCD_READ = 3'd3, S_SDCD_VRFY = 3'd4, S_SDCD_INCR = 3'd5;
 localparam [1:0] S_UART_IDLE = 2'd0, S_UART_WAIT = 2'd1, S_UART_SEND = 2'd2, S_UART_INCR = 2'd3;
 
 // Declare system variables
@@ -154,6 +154,8 @@ always @(*) begin
 			else
 				P_next = S_SDCD_READ;
 		S_SDCD_VRFY:  // Verify whether the data block begins with 'DLAB_TAG'.
+			P_next = S_SDCD_INCR;
+		S_SDCD_INCR:  // Determine if whole data search ends.
 			if (sdcd_verify_success)
 				P_next = S_SDCD_IDLE;
 			else
@@ -241,7 +243,7 @@ end
 
 always @(posedge clk) begin
 	if (rst || Q == S_UART_IDLE)
-		uart_counter <= 0;
+		uart_counter <= 1;
 	else if (Q == S_UART_INCR)
 		uart_counter <= uart_counter + 1;
 end
