@@ -9,7 +9,7 @@
 
 module pwm_gen(
 		input clk,
-		input [18:0] duty_cycle,
+		input [6:0] duty_cycle,
 		output pwm_signal
 	);
 
