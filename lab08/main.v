@@ -2,7 +2,7 @@
  * Control the Brightness of LEDs through a Rotary Dial
  */
 
-module rotary_ctrl(
+module main(
 		input rst,
 		input clk,
 		input rot_a,

@@ -13,7 +13,7 @@ module pwm_gen(
 		output pwm_signal
 	);
 
-reg  [18:0] counter;
+reg  [18:0] counter = 0;
 wire [18:0] high;
 
 assign high = (duty_cycle == 0) ? 0 : (5242 * duty_cycle + 87);
