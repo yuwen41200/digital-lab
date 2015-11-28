@@ -1,27 +1,27 @@
 /**
- * Rotation_direction.v
+ * Rotary Dial Controller
  * Copyright Notice: This code was written by the TAs of this course.
  */
 
-module Rotation_direction(
-		input CLK,
-		input ROT_A,
-		input ROT_B,
+module rotary_ctrl(
+		input clk,
+		input rot_a,
+		input rot_b,
 		output reg rotary_event,
 		output reg rotary_right
 	);
-	
+
+reg rot_a_temp, rot_b_temp;
 reg rotary_q1, rotary_q2;
 reg delay_rotary_q1;
-reg ROT_A_TEMP, ROT_B_TEMP;
 
-always @(posedge CLK) begin
-	ROT_A_TEMP <= ROT_A;
-	ROT_B_TEMP <= ROT_B;	
+always @(posedge clk) begin
+	rot_a_temp <= rot_a;
+	rot_b_temp <= rot_b;
 end
 
-always @(posedge CLK) begin
-	case ({ROT_B_TEMP, ROT_A_TEMP})
+always @(posedge clk) begin
+	case ({rot_b_temp, rot_a_temp})
 		2'b00:
 			begin
 				rotary_q1 <= 1'b0;
@@ -50,7 +50,7 @@ always @(posedge CLK) begin
 	endcase
 end
 
-always @(posedge CLK) begin
+always @(posedge clk) begin
 	delay_rotary_q1 <= rotary_q1;
 	if (rotary_q1 == 1'b1 && delay_rotary_q1 == 1'b0) begin
 		rotary_event <= 1'b1;
@@ -61,5 +61,5 @@ always @(posedge CLK) begin
 		rotary_right <= rotary_right;
 	end
 end
-	
+
 endmodule
