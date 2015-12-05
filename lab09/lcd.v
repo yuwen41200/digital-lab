@@ -16,7 +16,7 @@ module lcd(
 
 reg [23:0] count;
 
-always @ (posedge clk) begin
+always @(posedge clk) begin
 	if (rst) begin
 		count  <= 0;
 		LCD_D  <= 4'h8;
