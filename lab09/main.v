@@ -21,6 +21,9 @@ wire btn_r;
 assign temp1 = {row_A[71:56], row_A[23:0]}; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 assign temp2 = {row_B[71:56], row_B[23:0]}; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+// Scroll direction control - Signal declarations
+reg  scroll_up;
+
 // An SRAM memory block - Signal declarations
 reg  [7:0] sram [0:1023];
 reg  [7:0] data_out;
@@ -91,6 +94,14 @@ convert convert3(
 	.text_out1(char14),
 	.text_out2(char15)
 );
+
+// Scroll direction control
+always @(posedge clk) begin
+	if (rst)
+		scroll_up <= 1;
+	else if (btn_r)
+		scroll_up <= ~scroll_up;
+end
 
 // An SRAM memory block
 assign write_enabled = (state == INIT_MEM || (state == MARK_MUL && inner_idx[10] == 0)) ? 1 : 0;
@@ -224,7 +235,7 @@ always @(posedge clk) begin
 		print_idx0 <= 0;
 		print_idx1 <= 1;
 	end
-	else if (state == PRINT_LCD) begin
+	else if (state == PRINT_LCD && scroll_up) begin
 		if (print_idx0 + 1 < output_idx)
 			print_idx0 <= print_idx0 + 1;
 		else
@@ -233,6 +244,16 @@ always @(posedge clk) begin
 			print_idx1 <= print_idx1 + 1;
 		else
 			print_idx1 <= 0;
+	end
+	else if (state == PRINT_LCD && ~scroll_up) begin
+		if (print_idx0 > 0)
+			print_idx0 <= print_idx0 - 1;
+		else
+			print_idx0 <= output_idx - 1;
+		if (print_idx1 > 0)
+			print_idx1 <= print_idx1 - 1;
+		else
+			print_idx1 <= output_idx - 1;
 	end
 end
 
