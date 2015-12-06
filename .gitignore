@@ -39,6 +39,9 @@
 *.exe
 *.wdb
 *.ini
+*.nlf
+*.sdf
+*_timesim.v
 */_ngo/
 */iseconfig/
 */isim/

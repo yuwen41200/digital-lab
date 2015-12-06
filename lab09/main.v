@@ -12,10 +12,29 @@ module main(
 		output [3:0] LCD_D
 	);
 
-// Instantiate modules
+// Instantiate modules - Signal declarations
 reg  [127:0] row_A, row_B;
 wire btn_r;
 
+// An SRAM memory block - Signal declarations
+reg  [7:0] sram [0:1023];
+reg  [7:0] data_out;
+wire [7:0] data_in;
+wire write_enabled, enabled;
+wire [9:0] sram_addr;
+
+// FSM for the sieve algorithm - Signal declarations
+reg [2:0]  state, next_state;
+reg [7:0]  output_idx;
+reg [9:0]  output_list [0:255];
+reg [9:0]  outer_idx;
+reg [10:0] inner_idx;
+reg [24:0] wait_count;
+
+localparam [2:0] INIT_MEM = 0, WAIT_SM1 = 1, FIND_PRIME = 2, WAIT_SM2 = 3,
+                 MARK_MUL = 4, GEN_OUT  = 5, PRINT_LCD  = 6, WAIT_LG  = 7;
+
+// Instantiate modules
 lcd lcd0(
 	.clk(clk),
 	.rst(rst),
@@ -34,12 +53,6 @@ debounce debounce0(
 );
 
 // An SRAM memory block
-reg  [7:0] sram [0:1023];
-reg  [7:0] data_out;
-wire [7:0] data_in;
-wire write_enabled, enabled;
-wire [9:0] sram_addr;
-
 assign write_enabled = (state == INIT_MEM || (state == MARK_MUL && inner_idx[10] == 0)) ? 1 : 0;
 assign enabled = 1;
 assign data_in = (state == INIT_MEM) ? 1 : 0;
@@ -59,16 +72,6 @@ always @(posedge clk) begin
 end
 
 // FSM for the sieve algorithm
-reg [2:0]  state, next_state;
-reg [7:0]  output_idx;
-reg [7:0]  output_list [0:255];
-reg [9:0]  outer_idx;
-reg [10:0] inner_idx;
-reg [24:0] wait_count;
-
-localparam [2:0] INIT_MEM = 0, WAIT_SM1 = 1, FIND_PRIME = 2, WAIT_SM2 = 3,
-                 MARK_MUL = 4, GEN_OUT  = 5, PRINT_LCD  = 6, WAIT_LG  = 7;
-
 always @(*) begin
 	case (state)
 		INIT_MEM:
