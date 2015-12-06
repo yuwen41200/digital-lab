@@ -40,14 +40,16 @@ wire [7:0] data_in;
 wire write_enabled, enabled;
 wire [9:0] sram_addr;
 
-assign write_enabled = (state == INIT_MEM || state == MARK_MUL) ? 1 : 0;
+assign write_enabled = (state == INIT_MEM || (state == MARK_MUL && inner_idx[10] == 0)) ? 1 : 0;
 assign enabled = 1;
 assign data_in = (state == INIT_MEM) ? 1 : 0;
 assign sram_addr = (state == MARK_MUL) ? inner_idx : outer_idx;
 
 always @(posedge clk)
-	if (enabled && write_enabled)
+	if (enabled && write_enabled) begin
 		sram[sram_addr] <= data_in;
+		$display("Debug Message: data_out = %d, inner_idx = %d, outer_idx = %d", data_out, inner_idx, outer_idx);
+	end
 
 always @(posedge clk) begin
 	if (enabled && write_enabled)
@@ -58,10 +60,14 @@ end
 
 // FSM for the sieve algorithm
 reg [2:0]  state, next_state;
-reg [10:0] outer_idx, inner_idx;
+reg [7:0]  output_idx;
+reg [7:0]  output_list [0:255];
+reg [9:0]  outer_idx;
+reg [10:0] inner_idx;
 reg [24:0] wait_count;
 
-localparam [2:0] INIT_MEM = 0, WAIT_SM1 = 1, FIND_PRIME = 2, WAIT_SM2 = 3, MARK_MUL = 4, GEN_OUT = 5, PRINT_LCD = 6, WAIT_LG = 7;
+localparam [2:0] INIT_MEM = 0, WAIT_SM1 = 1, FIND_PRIME = 2, WAIT_SM2 = 3,
+                 MARK_MUL = 4, GEN_OUT  = 5, PRINT_LCD  = 6, WAIT_LG  = 7;
 
 always @(*) begin
 	case (state)
@@ -99,7 +105,10 @@ always @(*) begin
 				next_state = MARK_MUL;
 		GEN_OUT:
 		// Generate final output
-			next_state = PRINT_LCD;
+			if (outer_idx == 1023)
+				next_state = PRINT_LCD;
+			else
+				next_state = GEN_OUT;
 		PRINT_LCD:
 		// Print two lines on the LCD display
 			next_state = WAIT_LG;
@@ -132,7 +141,15 @@ always @(posedge clk) begin
 		inner_idx <= inner_idx + outer_idx - 1;
 	else
 		inner_idx <= outer_idx + outer_idx - 2;
-	$monitor($time, " %d %d %d", data_out, inner_idx, outer_idx);
+end
+
+always @(posedge clk) begin
+	if (rst)
+		output_idx <= 0;
+	else if (state == GEN_OUT && data_out == 1) begin
+		output_list[output_idx] <= outer_idx - 1;
+		output_idx <= output_idx + 1;
+	end
 end
 
 always @(posedge clk) begin
