@@ -6,8 +6,6 @@ module main(
 	input clk,
 	input rst,
 	input btn,
-	output [127:0] temp1, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	output [127:0] temp2, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	output LCD_E,
 	output LCD_RS,
 	output LCD_RW,
@@ -17,9 +15,6 @@ module main(
 // Instantiate modules - Signal declarations
 reg  [127:0] row_A, row_B;
 wire btn_r;
-
-assign temp1 = row_A; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-assign temp2 = row_B; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // Scroll direction control - Signal declarations
 reg  scroll_up;
@@ -110,10 +105,8 @@ assign data_in = (state == INIT_MEM) ? 1 : 0;
 assign sram_addr = (state == MARK_MUL) ? inner_idx : outer_idx;
 
 always @(posedge clk)
-	if (enabled && write_enabled) begin
+	if (enabled && write_enabled)
 		sram[sram_addr] <= data_in;
-		$display("Debug Message: data_out = %d, inner_idx = %d, outer_idx = %d", data_out, inner_idx, outer_idx);
-	end
 
 always @(posedge clk) begin
 	if (enabled && write_enabled)
