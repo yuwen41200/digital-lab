@@ -24,17 +24,22 @@ wire write_enabled, enabled;
 wire [9:0] sram_addr;
 
 // FSM for the sieve algorithm - Signal declarations
-reg [2:0]  state, next_state;
-reg [7:0]  output_idx;
-reg [9:0]  output_list [0:255];
-reg [9:0]  outer_idx;
-reg [10:0] inner_idx;
-reg [24:0] wait_count;
+reg  [2:0]  state, next_state;
+reg  [7:0]  print_idx;
+reg  [7:0]  output_idx;
+reg  [9:0]  output_list [0:255];
+reg  [9:0]  outer_idx;
+reg  [10:0] inner_idx;
+reg  [24:0] wait_count;
+wire [9:0]  print_idx_r;
+wire [7:0]  char0, char1, char2, char3, char4, char5;
 
 localparam [2:0] INIT_MEM = 0, WAIT_SM1 = 1, FIND_PRIME = 2, WAIT_SM2 = 3,
                  MARK_MUL = 4, GEN_OUT  = 5, PRINT_LCD  = 6, WAIT_LG  = 7;
 
 // Instantiate modules
+assign print_idx_r = print_idx + 1;
+
 lcd lcd0(
 	.clk(clk),
 	.rst(rst),
@@ -50,6 +55,20 @@ debounce debounce0(
 	.clk(clk),
 	.btn_in(btn),
 	.btn_out(btn_r)
+);
+
+convert convert0(
+	.binary_in(print_idx_r),
+	.text_out0(char0),
+	.text_out1(char1),
+	.text_out2(char2),
+);
+
+convert convert1(
+	.binary_in(output_list[print_idx]),
+	.text_out0(char3),
+	.text_out1(char4),
+	.text_out2(char5),
 );
 
 // An SRAM memory block
@@ -162,13 +181,13 @@ always @(posedge clk) begin
 		wait_count <= 0;
 end
 
-// Hello world
 always @(posedge clk) begin
 	if (rst) begin
 		row_A <= 128'h2248656C6C6F2C20576F726C64212220; // "Hello, World!"
 		row_B <= 128'h44656D6F206F6620746865204C43442E; // Demo of the LCD.
+		print_idx <= 0;
 	end
-	else if (btn_r) begin
+	else if (state == PRINT_LCD) begin
 		row_A <= row_B;
 		row_B <= row_A;
 	end
