@@ -25,20 +25,22 @@ wire [9:0] sram_addr;
 
 // FSM for the sieve algorithm - Signal declarations
 reg  [2:0]  state, next_state;
-reg  [7:0]  print_idx;
+reg  [7:0]  print_idx0, print_idx1;
 reg  [7:0]  output_idx;
 reg  [9:0]  output_list [0:255];
 reg  [9:0]  outer_idx;
 reg  [10:0] inner_idx;
 reg  [24:0] wait_count;
-wire [9:0]  print_idx_r;
-wire [7:0]  char0, char1, char2, char3, char4, char5;
+wire [9:0]  print_idx0_r, print_idx1_r;
+wire [7:0]  char00, char01, char02, char03, char04, char05,
+            char10, char11, char12, char13, char14, char15;
 
 localparam [2:0] INIT_MEM = 0, WAIT_SM1 = 1, FIND_PRIME = 2, WAIT_SM2 = 3,
                  MARK_MUL = 4, GEN_OUT  = 5, PRINT_LCD  = 6, WAIT_LG  = 7;
 
 // Instantiate modules
-assign print_idx_r = print_idx + 1;
+assign print_idx0_r = print_idx0 + 1;
+assign print_idx1_r = print_idx1 + 1;
 
 lcd lcd0(
 	.clk(clk),
@@ -58,17 +60,31 @@ debounce debounce0(
 );
 
 convert convert0(
-	.binary_in(print_idx_r),
-	.text_out0(char0),
-	.text_out1(char1),
-	.text_out2(char2)
+	.binary_in(print_idx0_r),
+	.text_out0(char00),
+	.text_out1(char01),
+	.text_out2(char02)
 );
 
 convert convert1(
-	.binary_in(output_list[print_idx]),
-	.text_out0(char3),
-	.text_out1(char4),
-	.text_out2(char5)
+	.binary_in(output_list[print_idx0]),
+	.text_out0(char03),
+	.text_out1(char04),
+	.text_out2(char05)
+);
+
+convert convert2(
+	.binary_in(print_idx1_r),
+	.text_out0(char10),
+	.text_out1(char11),
+	.text_out2(char12)
+);
+
+convert convert3(
+	.binary_in(output_list[print_idx1]),
+	.text_out0(char13),
+	.text_out1(char14),
+	.text_out2(char15)
 );
 
 // An SRAM memory block
@@ -136,7 +152,10 @@ always @(*) begin
 			next_state = WAIT_LG;
 		WAIT_LG:
 		// Wait for a long time
-			next_state = PRINT_LCD;
+			if (wait_count == 25'b1111111111111111111111111)
+				next_state = PRINT_LCD;
+			else
+				next_state = WAIT_LG;
 	endcase
 end
 
@@ -185,13 +204,30 @@ always @(posedge clk) begin
 	if (rst) begin
 		row_A <= 128'h5072696D652023303020697320303030;
 		row_B <= 128'h5072696D652023303020697320303030;
-		//  string:  " P r i m e   # 0 0   i s   0 0 0"
-		print_idx <= 0;
+		// string[16](PPrriimmee..##0000..iiss..000000)
 	end
 	else if (state == PRINT_LCD) begin
-		row_A[23:0]  <= {char3, char4, char5};
-		row_A[71:56] <= {char1, char2};
-		print_idx <= print_idx + 1;
+		row_A[23:0]  <= {char03, char04, char05};
+		row_A[71:56] <= {char01, char02};
+		row_B[23:0]  <= {char13, char14, char15};
+		row_B[71:56] <= {char11, char12};
+	end
+end
+
+always @(posedge clk) begin
+	if (rst) begin
+		print_idx0 <= 0;
+		print_idx1 <= 1;
+	end
+	else if (state == PRINT_LCD) begin
+		if (print_idx0 + 1 < output_idx)
+			print_idx0 <= print_idx0 + 1;
+		else
+			print_idx0 <= 0;
+		if (print_idx1 + 1 < output_idx)
+			print_idx1 <= print_idx1 + 1;
+		else
+			print_idx1 <= 0;
 	end
 end
 
