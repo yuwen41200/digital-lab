@@ -1,4 +1,8 @@
-`timescale 1ns / 1ps
+/**
+ * Testbench for Module: main
+ */
+
+`timescale 10ns / 1ps
 
 module main_tb;
 
@@ -24,7 +28,7 @@ main uut(
 	.LCD_D(LCD_D)
 );
 
-always #10 clk = ~clk;
+always #1 clk = ~clk;
 
 initial begin
 	clk = 0;
@@ -32,7 +36,8 @@ initial begin
 	btn = 0;
 	#100;
 	rst = 0;
-	#500000;
+	#100000000;
+	// Wait for 1 second
 	$finish;
 end
 
