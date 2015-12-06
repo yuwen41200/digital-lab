@@ -6,7 +6,8 @@ module main(
 	input clk,
 	input rst,
 	input btn,
-	output reg [127:0] row_A, row_B, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	output [79:0] temp1, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	output [79:0] temp2, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	output LCD_E,
 	output LCD_RS,
 	output LCD_RW,
@@ -14,8 +15,11 @@ module main(
 );
 
 // Instantiate modules - Signal declarations
-// reg  [127:0] row_A, row_B; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+reg  [127:0] row_A, row_B;
 wire btn_r;
+
+assign temp1 = row_A[79:0]; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+assign temp2 = row_B[79:0]; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // An SRAM memory block - Signal declarations
 reg  [7:0] sram [0:1023];
