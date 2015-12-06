@@ -9,8 +9,8 @@ module main_tb;
 reg  clk;
 reg  rst;
 reg  btn;
-wire [79:0] row_A;
-wire [79:0] row_B;
+wire [39:0] temp1;
+wire [39:0] temp2;
 wire LCD_E;
 wire LCD_RS;
 wire LCD_RW;
@@ -20,8 +20,8 @@ main uut(
 	.clk(clk),
 	.rst(rst),
 	.btn(btn),
-	.row_A(row_A),
-	.row_B(row_B),
+	.temp1(temp1),
+	.temp2(temp2),
 	.LCD_E(LCD_E),
 	.LCD_RS(LCD_RS),
 	.LCD_RW(LCD_RW),
