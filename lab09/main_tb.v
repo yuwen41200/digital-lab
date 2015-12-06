@@ -9,8 +9,8 @@ module main_tb;
 reg  clk;
 reg  rst;
 reg  btn;
-wire [39:0] temp1;
-wire [39:0] temp2;
+wire [127:0] row_A;
+wire [127:0] row_B;
 wire LCD_E;
 wire LCD_RS;
 wire LCD_RW;
@@ -20,8 +20,8 @@ main uut(
 	.clk(clk),
 	.rst(rst),
 	.btn(btn),
-	.temp1(temp1),
-	.temp2(temp2),
+	.temp1(row_A),
+	.temp2(row_B),
 	.LCD_E(LCD_E),
 	.LCD_RS(LCD_RS),
 	.LCD_RW(LCD_RW),
@@ -34,10 +34,15 @@ initial begin
 	clk = 0;
 	rst = 1;
 	btn = 0;
-	#100;
+	// 100 ns
+	#10;
 	rst = 0;
+	btn = 1;
+	// 20 ms
+	#2000000;
+	btn = 0;
+	// 1 s
 	#100000000;
-	// Wait for 1 second
 	$finish;
 end
 
