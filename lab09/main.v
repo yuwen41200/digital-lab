@@ -61,14 +61,14 @@ convert convert0(
 	.binary_in(print_idx_r),
 	.text_out0(char0),
 	.text_out1(char1),
-	.text_out2(char2),
+	.text_out2(char2)
 );
 
 convert convert1(
 	.binary_in(output_list[print_idx]),
 	.text_out0(char3),
 	.text_out1(char4),
-	.text_out2(char5),
+	.text_out2(char5)
 );
 
 // An SRAM memory block
@@ -183,13 +183,15 @@ end
 
 always @(posedge clk) begin
 	if (rst) begin
-		row_A <= 128'h2248656C6C6F2C20576F726C64212220; // "Hello, World!"
-		row_B <= 128'h44656D6F206F6620746865204C43442E; // Demo of the LCD.
+		row_A <= 128'h5072696D652023303020697320303030;
+		row_B <= 128'h5072696D652023303020697320303030;
+		//  string:  " P r i m e   # 0 0   i s   0 0 0"
 		print_idx <= 0;
 	end
 	else if (state == PRINT_LCD) begin
-		row_A <= row_B;
-		row_B <= row_A;
+		row_A[23:0]  <= {char3, char4, char5};
+		row_A[71:56] <= {char1, char2};
+		print_idx <= print_idx + 1;
 	end
 end
 
