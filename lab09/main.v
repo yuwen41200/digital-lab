@@ -6,6 +6,7 @@ module main(
 	input clk,
 	input rst,
 	input btn,
+	output row_A, row_B, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	output LCD_E,
 	output LCD_RS,
 	output LCD_RW,
