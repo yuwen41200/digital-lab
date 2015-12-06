@@ -5,6 +5,8 @@ module main_tb;
 reg  clk;
 reg  rst;
 reg  btn;
+wire row_A;
+wire row_B;
 wire LCD_E;
 wire LCD_RS;
 wire LCD_RW;
@@ -14,6 +16,8 @@ main uut(
 	.clk(clk),
 	.rst(rst),
 	.btn(btn),
+	.row_A(row_A),
+	.row_B(row_B),
 	.LCD_E(LCD_E),
 	.LCD_RS(LCD_RS),
 	.LCD_RW(LCD_RW),
