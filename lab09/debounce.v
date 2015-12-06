@@ -3,10 +3,10 @@
  */
 
 module debounce(
-		input clk,
-		input btn_in,
-		output reg btn_out
-	);
+	input clk,
+	input btn_in,
+	output reg btn_out
+);
 
 // 20 ms @ 50MHz
 parameter DEBOUNCE_PERIOD = 1000000;

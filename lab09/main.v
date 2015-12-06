@@ -3,14 +3,14 @@
  */
 
 module main(
-		input clk,
-		input rst,
-		input btn,
-		output LCD_E,
-		output LCD_RS,
-		output LCD_RW,
-		output [3:0] LCD_D
-	);
+	input clk,
+	input rst,
+	input btn,
+	output LCD_E,
+	output LCD_RS,
+	output LCD_RW,
+	output [3:0] LCD_D
+);
 
 // Instantiate modules - Signal declarations
 reg  [127:0] row_A, row_B;

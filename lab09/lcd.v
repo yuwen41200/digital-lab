@@ -4,15 +4,15 @@
  */
 
 module lcd(
-		input clk,
-		input rst,
-		input [127:0] row_A,
-		input [127:0] row_B,
-		output reg LCD_E,
-		output reg LCD_RS,
-		output reg LCD_RW,
-		output reg [3:0] LCD_D
-	);
+	input clk,
+	input rst,
+	input [127:0] row_A,
+	input [127:0] row_B,
+	output reg LCD_E,
+	output reg LCD_RS,
+	output reg LCD_RW,
+	output reg [3:0] LCD_D
+);
 
 reg [23:0] count;
 
