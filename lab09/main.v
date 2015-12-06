@@ -6,7 +6,7 @@ module main(
 	input clk,
 	input rst,
 	input btn,
-	output row_A, row_B, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	output reg [127:0] row_A, row_B, // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	output LCD_E,
 	output LCD_RS,
 	output LCD_RW,
@@ -14,7 +14,7 @@ module main(
 );
 
 // Instantiate modules - Signal declarations
-reg  [127:0] row_A, row_B;
+// reg  [127:0] row_A, row_B; // For the purpose of simulation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 wire btn_r;
 
 // An SRAM memory block - Signal declarations
