@@ -1,6 +1,7 @@
 ## Final Project ##
 
-Study of an FPU
+Study of an FPU  
+https://github.com/yuwen41200/digital-lab/raw/master/proj/final-paper.pdf
 
 ### FPU Core ###
 
